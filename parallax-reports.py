@@ -33,6 +33,9 @@ admin.add_view(ModelView(Node, db.session))
 
 db.create_all()
 
+@app.route('/manage',methods=["GET"])
+def manage():
+    return render_template()
 
 @app.route('/stat/<int:id>',methods=["GET","PUT","POST","DELETE"])
 @cross_origin(origin='*', headers=['Content- Type', 'Authorization'])
