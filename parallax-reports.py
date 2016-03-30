@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask.ext.cors import cross_origin
-import json
+import json,socket
 app = Flask(__name__)
 admin = Admin(app, name='microblog', template_mode='bootstrap3')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nodes.db'
@@ -22,7 +22,18 @@ class Node(db.Model):
         self.ip = ip
         self.cpu = cpu
         self.mem = mem
-        self.status= online
+        self.status= "online"
+
+    def send(self,command):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(2)
+    try :
+        s.connect((self.ip,1212))
+        s.send(str(command))
+        res=s.recv(4096)
+        self.status=res
+    except :
+        print 'Unable to connect'
 
     def json(self):
         data={}
@@ -33,8 +44,12 @@ class Node(db.Model):
         data['status']= self.status
         return data
 
-admin.add_view(ModelView(Node, db.session))
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    node = db.Column(db.Integer,db.ForeignKey(Node.id),primary_key=True)
 
+admin.add_view(ModelView(Node, db.session))
+admin.add_view(ModelView(Task, db.session))
 db.create_all()
 
 
@@ -57,7 +72,9 @@ def action(id):
         command=3
         node.status="Killing all tasks"
     db.session.commit()
-    node.send()
+    node.send(command)
+    nodes=Node.query.all()
+    return render_template('manage.html',nodes=nodes)
 
 
 
