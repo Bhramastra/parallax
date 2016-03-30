@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Parallax | Node Management Portal</title>
+</head>
+<body>
+{% block body %}
+  <table border="1">
+  <tr>
+      <th>Node #</th>
+      <th>IP</th>
+      <th>% CPU</th>
+      <th>% Memory</th>
+      <th>Actions</th>
+  </tr>
+  {% for node in nodes %}
+    <tr>
+        <td>{{ node.id }}</td>
+        <td>{{node.ip}}</td>
+        <td>{{node.cpu}}</td>
+        <td>{{node.mem}}</td>
+        <td><a href="/restart/{{ node.id }}">Restart</a> <a href="/shutdown/{{ node.id }}">Shutdown</a> <a href="/eot/{{ node.id }}">Kill all Task</a></td>
+    </tr>
+  {% endfor %}
+  </table>
+{% endblock %}
+
+</body>
+</html>
