@@ -1,0 +1,4 @@
+Linux 3.16.0-50-generic (yash-Inspiron-3542) 	Thursday 31 March 2016 	_x86_64_	(4 CPU)
+
+01:27:09  IST  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+01:27:09  IST  all   15.26    0.26    3.25    4.03    0.00    0.12    0.00    0.00    0.00   77.08
