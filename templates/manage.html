@@ -13,6 +13,7 @@
       <th>% CPU</th>
       <th>% Memory</th>
       <th>Actions</th>
+      <th>Status</th>
   </tr>
   {% for node in nodes %}
     <tr>
@@ -20,6 +21,7 @@
         <td>{{node.ip}}</td>
         <td>{{node.cpu}}</td>
         <td>{{node.mem}}</td>
+        <td>{{node.status}}</td>
         <td><a href="/restart/{{ node.id }}">Restart</a> <a href="/shutdown/{{ node.id }}">Shutdown</a> <a href="/eot/{{ node.id }}">Kill all Task</a></td>
     </tr>
   {% endfor %}

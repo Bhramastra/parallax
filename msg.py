@@ -41,6 +41,7 @@ def server(port,type):
                     data = sock.recv(RECV_BUFFER)
                     if data:
                         # there is something in the socket
+                        print data
                         broadcast(server_socket,sock,data)  
                     else:
                         # remove the socket that's broken    

@@ -13,7 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nodes.db'
 db = SQLAlchemy(app)
 class Node(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    ip = db.Column(db.String(80), unique=True)
+    ip = db.Column(db.String(80))
     mem = db.Column(db.Float)
     cpu = db.Column(db.Float)
     status = db.Column(db.String(20))
@@ -28,11 +28,12 @@ class Node(db.Model):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(2)
         try :
-            s.connect((self.ip,1212))
+            s.connect(('0.0.0.0',1200))
             s.send(str(command))
             res=s.recv(4096)
             self.status=res
-        except :
+        except Exception as e:
+            print str(e)
             print 'Unable to connect'
 
     def json(self):
@@ -63,15 +64,16 @@ def action(id):
         return jsonify(error="Node not found"),404
     rule=request.url_rule
     if 'restart' in rule.rule:
-        command=1
+        command=2
         node.status="Restarting"
     elif 'shutdown' in rule.rule:
-        command=2
+        command=1
         node.status="Shutting Down"
     elif 'eot' in rule.rule:
         command=3
         node.status="Killing all tasks"
     db.session.commit()
+    print command
     node.send(command)
     nodes=Node.query.all()
     return render_template('manage.html',nodes=nodes)
