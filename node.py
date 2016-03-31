@@ -74,24 +74,44 @@ s.listen(5)
 conn,addr=s.accept()
 
 
-def restart():
 
-    //delete node query
+def shutdown(conn):
+
+    payload = {"cpu" : cpu ,"mem" : mem , "status" : "Deleting"}
+    r = requests.put("http://localhost:5000/stat/"+ str(id),payload)
+    print r.text
+
+    k = requests.delete("http://localhost:5000/stat/"+ str(id))
+    print k.text
+
+    conn.close()
+
+
+
+
+def ulpoad_data(data):
+    while 1:
+        file = open("agent.py","w")
+        file.write(data)
+        file.close
+        break
+
+
 
 
 while 1:
     print "parent"
-#     data=s.recv(1024)
-#     if data=='1':
-#         shutdown()
-#     if data=='2':
-#         restart()
-#     if data=='3':
-#         kill_all()
-#     if 'upload' in data:
-#         thread.start_new_thread(handleclient,(conn,i))
-#     if 'exec' in data:
-#         #create new file agent.py
-#         #exec printcval(a,b,c)
-#         os.system("pyhton agent.py")
+    data=s.recv(1024)
+    if data=='1':
+        shutdown(conn)
+    if data=='2':
+        restart()
+    if data=='3':
+        kill_all()
+    if 'upload' in data:
+        thread.start_new_thread(upload_data,(data))
+    if 'exec' in data:
+        #create new file agent.py
+        #exec printcval(a,b,c)
+        os.system("pyhton agent.py")
 
