@@ -27,13 +27,13 @@ class Node(db.Model):
     def send(self,command):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(2)
-    try :
-        s.connect((self.ip,1212))
-        s.send(str(command))
-        res=s.recv(4096)
-        self.status=res
-    except :
-        print 'Unable to connect'
+        try :
+            s.connect((self.ip,1212))
+            s.send(str(command))
+            res=s.recv(4096)
+            self.status=res
+        except :
+            print 'Unable to connect'
 
     def json(self):
         data={}
