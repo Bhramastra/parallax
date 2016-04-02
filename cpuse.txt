@@ -1,4 +1,4 @@
-Linux 3.16.0-50-generic (yash-Inspiron-3542) 	Saturday 02 April 2016 	_x86_64_	(4 CPU)
+Linux 3.13.0-32-generic (gaurav-Lenovo-B480) 	Saturday 02 April 2016 	_x86_64_	(4 CPU)
 
-05:51:06  IST  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
-05:51:06  IST  all   25.39    0.24   11.56    4.07    0.00    0.10    0.00    0.00    0.00   58.65
+07:39:35  IST  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+07:39:35  IST  all   43.55    0.09   14.91    7.53    0.61    0.00    0.00    0.00    0.00   33.31

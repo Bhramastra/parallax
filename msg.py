@@ -7,6 +7,9 @@ import select
 
 class Server:
     SOCKET_LIST = []
+    NODE_LIST = []
+    USER_LIST = []
+    SCHEDULER_LIST = []
     HOST = '0.0.0.0'
     RECV_BUFFER = 4096
     port= 1200
@@ -35,21 +38,24 @@ class Server:
             # get the list sockets which are ready to be read through select
             # 4th arg, time_out  = 0 : poll and never block
             ready_to_read,ready_to_write,in_error = select.select(self.SOCKET_LIST,[],[],0)
-
             for sock in ready_to_read:
                 # a new connection request recieved
                 if sock == server_socket:
                     sockfd, addr = server_socket.accept()
-                    # type=sockfd.recv(1024)
-                    # print type
-                    # if type == "node":
-                    #     NODE_LIST.append(sockfd)
-                    # if type == "scheduler":
-                    #     SCHEDULER_LIST.append(sockfd)
-                    # if type == "user":
-                    #     USER_LIST.append(sockfd)
+                    type=sockfd.recv(4)
+                    if type == "node":
+                        self.NODE_LIST.append(sockfd)
+                        print self.NODE_LIST
+                    if type == "scheduler":
+                        self.SCHEDULER_LIST.append(sockfd)
+                    if type == "user":
+                        data=sockfd.recv(1024)
+                        if data:
+                            print data
+                            self.broadcast(server_socket,sock,data)
+                        self.USER_LIST.append(sockfd)
                     self.SOCKET_LIST.append(sockfd)
-                    print "Client "+ str(addr)+" connected to " +self.type
+                    print "Client "+ type+ str(addr)+" connected to " +self.type
 
                    # broadcast(server_socket, sockfd, "[%s:%s] entered our chatting room\n" % addr)
 
@@ -61,7 +67,7 @@ class Server:
                         data = sock.recv(self.RECV_BUFFER)
                         if data:
                             # there is something in the socket
-                            print "received" + data
+                            print sock.gethostname() + "got data" +data
                             self.broadcast(server_socket,sock,data)
                         else:
                             # remove the socket that's broken
@@ -81,8 +87,8 @@ class Server:
     # broadcast chat messages to all connected clients
     def broadcast(self, server_socket, sock, message):
         print "brodacast called"
-        print self.SOCKET_LIST
-        for socket in self.SOCKET_LIST:
+        print self.NODE_LIST
+        for socket in self.NODE_LIST:
             # send the message only to peer
             if socket != server_socket and socket != sock :
                 try :
@@ -93,5 +99,5 @@ class Server:
                     # broken socket connection
                     socket.close()
                     # broken socket, remove it
-                    if socket in self.SOCKET_LIST:
-                        self.SOCKET_LIST.remove(socket)
+                    if socket in self.NODE_LIST:
+                        self.NODE_LIST.remove(socket)

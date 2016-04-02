@@ -1,2 +1,2 @@
-import cloudcode.py
-ga(dsd)
+import cloudcode
+cloudcode.ga('dsd')

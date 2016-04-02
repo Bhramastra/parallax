@@ -3,6 +3,7 @@ import subprocess
 import psutil
 import os
 import requests
+import soldier
 import threading
 from Queue import Queue
 
@@ -37,7 +38,7 @@ def reportStat(q):
         while 1:
             if command== -1:
                 print "Closing"
-                thread.exit()
+                return
             used_mem = psutil.virtual_memory()
             mem = 100 - used_mem[2]
             os.system("mpstat > cpuse.txt")
@@ -72,7 +73,7 @@ def recvfile(q):
         print "recvfile started"
         sock = socket.socket()
         sock.connect(('0.0.0.0', 1201))
-        cloud_code = open("cloudcode.py","w")
+        cloud_code = open("cloudcode.py","a")
         while 1:
             data = sock.recv(1)
             if data:
@@ -93,6 +94,7 @@ def master_listener(q):
     try:
         s = socket.socket()
         s.connect(('0.0.0.0', 1200))
+        s.send("node")
         print "Master Listener started"
         while 1:
             data = s.recv(1024)
@@ -104,14 +106,17 @@ def master_listener(q):
             if data=='3':
                 kill_all()
             if 'execute' in data:
-
+                print "here"
                 data= data.split(":")
                 task = 1
                 f_name = "agent" + str(task) + ".py"
                 file = open(f_name,"w")
-                file.write("import cloudcode.py")
+                file.write("import cloudcode")
                 file.write("\n")
-                file.write(data[1])
+                file.write("cloudcode.ga('dsd')")
+                file.close()
+                print "here"
+                os.system("python "+ f_name+"> xuz.txt")
                 fprocess = soldier.run('python ' + f_name + ' > result.txt', background=True)
 
     except Exception as e:
@@ -133,8 +138,8 @@ def logger(q):
 # Global queue where all threads leave there errors
 q = Queue()
 
+# threading.Thread(target=recvfile, args=(q,), name="File Receiver"),
 threadlist = [threading.Thread(target=reportStat, args=(q,), name="Report Stat"),
-            threading.Thread(target=recvfile, args=(q,), name="File Receiver"),
             threading.Thread(target=master_listener, args=(q,), name="Master listener"),
             threading.Thread(target=logger, args=(q,), name="Logger")]
 
