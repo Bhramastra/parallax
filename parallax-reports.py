@@ -4,6 +4,9 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask.ext.cors import cross_origin
 import json,socket
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 app = Flask(__name__)
 admin = Admin(app, name='microblog', template_mode='bootstrap3')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///nodes.db'
@@ -29,6 +32,7 @@ class Node(db.Model):
         s.settimeout(2)
         try :
             s.connect(('0.0.0.0',1200))
+            s.send
             s.send(str(command))
             res=s.recv(4096)
             self.status=res
@@ -114,6 +118,27 @@ def register():
     db.session.commit()
     return jsonify(**(node.json())),201
 
+
+@app.route('/deploy',methods=["GET"])
+def deploy():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(2)
+    file = open("test.txt", "r")
+    try:
+        s.connect(('0.0.0.0',1200))
+        s.send(str("upload"))
+        bytes_read = file.read(1)
+        print bytes_read
+        print "after bytes"
+        while bytes_read:
+            s.send(bytes_read)
+            bytes_read = file.read(1)
+    except Exception as e:
+        print str(e)
+        print 'Unable to connect'
+    finally:
+        file.close()
+    return "sent",200
 
 if __name__ == '__main__':
     app.run(debug=True)

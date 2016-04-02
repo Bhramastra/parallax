@@ -1,4 +1,4 @@
-Linux 3.13.0-32-generic (gaurav-Lenovo-B480) 	Thursday 31 March 2016 	_x86_64_	(4 CPU)
+Linux 3.13.0-32-generic (gaurav-Lenovo-B480) 	Saturday 02 April 2016 	_x86_64_	(4 CPU)
 
-07:25:13  IST  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
-07:25:13  IST  all   31.48    0.54    9.65    1.31    1.43    0.00    0.00    0.00    0.00   55.59
+12:08:49  IST  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+12:08:49  IST  all   35.29    0.35   17.45    4.79    1.19    0.00    0.00    0.00    0.00   40.93

@@ -6,10 +6,9 @@ import requests
 import thread
 
 
-
+command=0
 used_mem = psutil.virtual_memory()
 mem = 100 - used_mem[2]
-
 
 os.system("mpstat > cpuse.txt")
 
@@ -35,6 +34,9 @@ id = k['id']
 
 def reportStat():
     while 1:
+        if command== -1:
+            print "Closing"
+            thread.exit()
         used_mem = psutil.virtual_memory()
         mem = 100 - used_mem[2]
         os.system("mpstat > cpuse.txt")
@@ -52,6 +54,8 @@ def reportStat():
 
 
 def shutdown(s):
+    global command
+    command=-1
     payload = {"cpu" : cpu ,"mem" : mem , "status" : "Deleting"}
     r = requests.put("http://localhost:5000/stat/"+ str(id),payload)
     print r.text
@@ -60,18 +64,27 @@ def shutdown(s):
     s.close()
 
 
-
-
-def ulpoad_data(data):
+def recvfile():
+    print "recvfile started"
+    sock = socket.socket()
+    sock.connect(('0.0.0.0', 1201))
+    cloud_code = open("cloudcode.py","w")
     while 1:
-        file = open("agent.py","w")
-        file.write(data)
-        file.close
-        break
+        data = sock.recv(1)
+        if data:
+            print "data from test.py \t"+data
+            if data=='$':
+                data=sock.recv(4)
+                if data=="exit":
+                    cloud_code.close()
+                else:
+                    cloud_code.write("$"+data)
+            else:
+                cloud_code.write(data)
 
 
 thread.start_new_thread(reportStat,())
-
+thread.start_new_thread(recvfile,())
 s=socket.socket()
 s.connect(('0.0.0.0',1200))
 while 1:
@@ -83,8 +96,6 @@ while 1:
         restart()
     if data=='3':
         kill_all()
-    if 'upload' in data:
-        thread.start_new_thread(upload_data,(data))
     if 'exec' in data:
         #create new file agent.py
         #exec printcval(a,b,c)
