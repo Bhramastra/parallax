@@ -1,11 +1,19 @@
 import socket
+import requests
+config={}
+config['MANAGEMENT_HOST']="0.0.0.0"
+config['MANAGEMENT_PORT']=5000
 
+def get_nodes():
+    r=requests.get("http://"+config['MANAGEMENT_HOST']+":"+str(config['MANAGEMENT_PORT'])+"/nodes/online")
+    nodes=r.json()
+    return nodes['nodes']
 
 def execute(function,args,max_nodes=10):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(10)
     try:
-        s.connect(('0.0.0.0', 1200))
+        s.connect(("0.0.0.0",1200))
         try:
             s.send("user")
             s.send("execute:" + function+'('+args+")")
@@ -22,25 +30,23 @@ def execute(function,args,max_nodes=10):
 
 def deploy(filename):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(10)
     try:
-        s.connect(('0.0.0.0', 1201))
-        f = open(filename, "rb")
-        try:
-            bytes_read = f.read(1)
-            print bytes_read
-            print "after bytes"
-            while bytes_read:
-                s.send(bytes_read)
-                bytes_read = f.read(1)
-            return 0
-        except Exception as e:
-            print str(e)
-            return -1
-        finally:
-            s.send("$exit")
-            f.close()
-            s.close()
+        nodes= get_nodes()
+        for node in nodes:
+            print node
+            ip, port= node['ip'].split(":")
+            s.connect((ip, 1201))
+            f = open(filename, "rb")
+            try:
+                for line in f:
+                    print line
+                    s.send(line)
+            except Exception as e:
+                print str(e)
+                return -1
+            finally:
+                f.close()
+                s.close()
     except Exception as e:
         print str(e)
         return -1
