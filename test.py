@@ -1,4 +1,4 @@
 import px
 
-px.deploy("test.txt")
-px.execute("gat","dsd")
+# px.deploy("test.txt")
+px.execute("ga","dsd")

@@ -2,7 +2,21 @@ import socket
 
 
 def execute(function,args,max_nodes=10):
-    print "this is execute function"
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(10)
+    try:
+        s.connect(('0.0.0.0', 1200))
+        try:
+            s.send("execute:" + function+"("+args+")")
+
+        except Exception as e:
+            print str(e)
+            return -1
+        finally:
+            s.close()
+    except Exception as e:
+        print str(e)
+        return -1
 
 
 def deploy(filename):

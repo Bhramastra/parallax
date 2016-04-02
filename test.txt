@@ -1,4 +1,3 @@
-12
-32
-3
-21
+
+def ga(ar):
+    print ar

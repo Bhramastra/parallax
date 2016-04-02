@@ -86,7 +86,7 @@ def recvfile(q):
                 else:
                     cloud_code.write(data)
     except Exception as e:
-        q.put((repr(e), threading.current_thread.func_name))
+        q.put((repr(e), threading.current_thread().getName()))
         return
 
 def master_listener(q):
@@ -103,10 +103,17 @@ def master_listener(q):
                 restart()
             if data=='3':
                 kill_all()
-            if 'exec' in data:
-                #create new file agent.py
-                #exec printcval(a,b,c)
-                os.system("pyhton agent.py")
+            if 'execute' in data:
+
+                data= data.split(":")
+                task = 1
+                f_name = "agent" + str(task) + ".py"
+                file = open(f_name,"w")
+                file.write("import cloudcode.py")
+                file.write("\n")
+                file.write(data[1])
+                fprocess = soldier.run('python ' + f_name + ' > result.txt', background=True)
+
     except Exception as e:
         q.put((repr(e), threading.current_thread().getName()))
         return
@@ -138,4 +145,5 @@ for t in threadlist:
 
 while 1:
     pass
+
 
