@@ -1,2 +1,2 @@
-2def ga(ar):
+def ga(ar):
     print ar

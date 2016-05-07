@@ -14,6 +14,8 @@ app.secret_key="gaurab"
 
 
 db = SQLAlchemy(app)
+
+
 class Node(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ip = db.Column(db.String(80))

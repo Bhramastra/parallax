@@ -1,5 +1,7 @@
 import socket
 import requests
+import traceback
+import pdb
 config={}
 config['MANAGEMENT_HOST']="0.0.0.0"
 config['MANAGEMENT_PORT']=5000
@@ -19,11 +21,13 @@ def execute(function,args,max_nodes=10):
             s.send("execute:" + function+'('+args+")")
 
         except Exception as e:
+            print traceback.format_exc()
             print str(e)
             return -1
         finally:
             s.close()
     except Exception as e:
+        print traceback.format_exc()
         print str(e)
         return -1
 
@@ -32,6 +36,7 @@ def deploy(filename):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         nodes= get_nodes()
+        # pdb.set_trace()
         for node in nodes:
             print node
             ip, port= node['ip'].split(":")
@@ -41,12 +46,9 @@ def deploy(filename):
                 for line in f:
                     print line
                     s.send(line)
-            except Exception as e:
-                print str(e)
-                return -1
-            finally:
-                f.close()
                 s.close()
+            except Exception as e:
+                raise e
     except Exception as e:
         print str(e)
         return -1
