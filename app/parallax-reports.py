@@ -66,6 +66,20 @@ class Task(db.Model):
         data['id']=self.id
         return data
 
+class Result(db.Model):
+    id = db.Column(db.Integer)
+    #node = db.Column(db.Integer,db.ForeignKey(Node.id))
+    result = db.Column(db.String(20))
+
+    def __init__(self,res):
+        self.id = id
+        self.result= result
+
+    def json(self):
+        data={}
+        data['id']=self.id
+        return data
+
     
 admin.add_view(ModelView(Node, db.session))
 admin.add_view(ModelView(Task, db.session))
@@ -154,6 +168,15 @@ def taskreg():
     db.session.add(task)
     db.session.commit()
     return jsonify(**(task.json())),201
+
+@app.route('/postresult',methods=["POST"])
+def postresult():
+    #data = request.get(force=True)
+    print request.form['id']
+    result=Result(request.form['id'],request.form['result'])
+    db.session.add(result)
+    db.session.commit()
+    return jsonify(**(result.json())),201
 
 
 @app.route('/myip',methods=["GET"])

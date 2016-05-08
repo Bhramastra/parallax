@@ -132,9 +132,20 @@ def master_listener(q):
                 r = requests.post("http://localhost:5000/taskreg",payload)
                 print r.json()
                 k = r.json()
-
                 l_id = str(k['id'])
                 os.system("python "+ f_name+"> result" + l_id + ".txt")
+                file = open("result" + l_id + "txt","r")
+                for line in file:
+                        val=line
+
+                payload = {"id" : l_id,"result":val}
+                r = requests.post("http://localhost:5000/postresult",payload)
+                print r.json()
+                k = r.json()
+
+
+
+
 
 
     except Exception as e:
