@@ -127,7 +127,14 @@ def master_listener(q):
                 file.write("\n")
                 file.write("cloudcode."+data)
                 file.close()
-                os.system("python "+ f_name+"> xuz.txt")
+
+                payload = {"id" : id}
+                r = requests.post("http://localhost:5000/taskreg",payload)
+                print r.json()
+                k = r.json()
+
+                l_id = k['id']
+                os.system("python "+ f_name+"> result" + l_id + ".txt")
 
 
     except Exception as e:

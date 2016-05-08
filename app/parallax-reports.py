@@ -52,11 +52,21 @@ class Node(db.Model):
         return data
 
 
-
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     node = db.Column(db.Integer,db.ForeignKey(Node.id),primary_key=True)
+    status = db.Column(db.String(20))
 
+    def __init__(self,node):
+        self.node = node
+        self.status= "running"
+
+    def json(self):
+        data={}
+        data['id']=self.ip
+        return data
+
+    
 admin.add_view(ModelView(Node, db.session))
 admin.add_view(ModelView(Task, db.session))
 db.create_all()
@@ -133,6 +143,17 @@ def register():
     db.session.add(node)
     db.session.commit()
     return jsonify(**(node.json())),201
+
+
+
+@app.route('/taskreg',methods=["POST"])
+def taskreg():
+    #data = request.get(force=True)
+    print request.form['id']
+    task=Task(request.form['id'])
+    db.session.add(task)
+    db.session.commit()
+    return jsonify(**(task.json())),201
 
 
 @app.route('/myip',methods=["GET"])

@@ -17,8 +17,8 @@ def execute(function,args,max_nodes=10):
     try:
         s.connect(("0.0.0.0",1200))
         try:
-            import pdb
-            pdb.set_trace()
+           # import pdb
+           # pdb.set_trace()
             s.send("user")
             s.send("execute:" + function+'('+'"'+args+'"'+")")
         except Exception as e:
