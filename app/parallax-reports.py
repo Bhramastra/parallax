@@ -52,44 +52,53 @@ class Node(db.Model):
         return data
 
 
+class Client(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer,db.ForeignKey(Client.id))
     func = db.Column(db.String(20))
+    parts = db.Column(db.Integer)
+    # results= db.relationship('tasks')
 
-    def __init__(self,function):
-        self.func=function
+    def __init__(self, client_id, function,parts=10):
+        self.func = function
+        self.client_id = client_id
+        self.parts = parts
 
     def json(self):
-        data={}
-        data['id']=self.id
-        data['function']=self.func
+        data = dict()
+        data['id'] = self.id
+        data['client_id'] = self.client_id
+        data['function'] = self.func
+        data['parts'] = self.parts
         return data
-
 
 
 class Result(db.Model):
     id = db.Column(db.Integer,primary_key=True)
+    client_id = db.Column(db.Integer, db.ForeignKey(Client.id))
     task_id = db.Column(db.Integer, db.ForeignKey(Task.id))
     node_id = db.Column(db.Integer, db.ForeignKey(Node.id))
     result = db.Column(db.String(20))
 
-    def __init__(self,task_id,node_id,res):
+    def __init__(self, task_id,client_id,node_id, res):
         self.task_id = task_id
+        self.client_id = client_id
         self.node_id = node_id
         self.result= res
 
     def json(self):
-        data = {}
-        data['id'] = self.id
-        data['task_id'] = self.task_id
-        data['node_id'] = self.node_id
-        data['result'] = self.result
+        data = {'id': self.id, 'task_id': self.task_id, 'node_id': self.node_id, 'result': self.result}
         return data
 
-    
+
 admin.add_view(ModelView(Node, db.session))
 admin.add_view(ModelView(Task, db.session))
 admin.add_view(ModelView(Result, db.session))
+admin.add_view(ModelView(Client, db.session))
 db.create_all()
 
 
@@ -153,7 +162,7 @@ def stat(id):
         db.session.commit()
         return "Deleted",200
     else:
-        return jsonify(**(node.json())),200
+        return jsonify(**(node.json())), 200
 
 
 @app.route('/register',methods=["POST"])
@@ -169,19 +178,29 @@ def register():
 
 @app.route('/taskreg',methods=["POST"])
 def taskreg():
-    task=Task(request.form['func'])
+    parts=Node.query.filter_by(status="online").count()
+    task=Task(request.form['client_id'],request.form['func'],parts)
     db.session.add(task)
     db.session.commit()
     return jsonify(**(task.json())),201
 
 
+@app.route('/clientreg',methods=["POST"])
+def clientreg():
+    client = Client()
+    db.session.add(client)
+    db.session.commit()
+    return jsonify(msg="success",id=client.id),201
+
+
 @app.route('/postresult',methods=["POST"])
 def postresult():
     print request.form['task_id']
-    result=Result(request.form['task_id'],request.form['node_id'],request.form['result'])
+    task= Task.query.get(int(request.form['task_id']))
+    result=Result(request.form['task_id'],task.client_id,request.form['node_id'],request.form['result'])
     db.session.add(result)
     db.session.commit()
-    return jsonify(**(result.json())),201
+    return jsonify(**(result.json())), 201
 
 
 @app.route('/myip',methods=["GET"])
@@ -211,6 +230,28 @@ def deploy():
     finally:
         file.close()
     return "sent",200
+
+@app.route('/fetch/<client_id>/<task_id>',methods=["GET"])
+@cross_origin(origin='*', headers=['Content- Type', 'Authorization'])
+def fetch_output(client_id,task_id):
+    client_id = int(client_id)
+    task_id=int(task_id)
+    result = Result.query.filter_by(client_id=client_id,task_id=task_id)
+    task = Task.query.get(task_id)
+    if task is None:
+        print "No such task"
+        return "0"
+    print result.count()
+    if result.count() == task.parts:
+        result_list = list()
+        for r in result:
+            temp = dict()
+            temp['node_id'] = r.node_id
+            temp['res'] = r.result
+            result_list.append(temp.copy())
+        return jsonify(result=result_list), 200
+    else:
+        return "0"
 
 @app.route('/partial/<task_id>',methods=["POST"])
 @cross_origin(origin='*', headers=['Content- Type', 'Authorization'])

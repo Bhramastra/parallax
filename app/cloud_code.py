@@ -1,3 +1,0 @@
-
-def sum():
-    print "ram"
