@@ -54,7 +54,7 @@ class Node(db.Model):
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    node = db.Column(db.Integer,db.ForeignKey(Node.id),primary_key=True)
+    node = db.Column(db.Integer,db.ForeignKey(Node.id))
     status = db.Column(db.String(20))
 
     def __init__(self,node):
@@ -63,7 +63,7 @@ class Task(db.Model):
 
     def json(self):
         data={}
-        data['id']=self.ip
+        data['id']=self.id
         return data
 
     
@@ -183,6 +183,12 @@ def deploy():
     finally:
         file.close()
     return "sent",200
+
+@app.route('/partial/<task_id>',methods=["POST"])
+@cross_origin(origin='*', headers=['Content- Type', 'Authorization'])
+def partial_output(task_id):
+    task_id=int(task_id)
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0",debug=True)

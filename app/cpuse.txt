@@ -1,4 +1,4 @@
-Linux 3.16.0-50-generic (yash-Inspiron-3542) 	Sunday 08 May 2016 	_x86_64_	(4 CPU)
+Linux 4.2.0-16-generic (gaurav-laptop) 	Sunday 08 May 2016 	_x86_64_	(4 CPU)
 
-07:02:59  IST  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
-07:02:59  IST  all   20.13    0.58    9.60   24.46    0.00    0.04    0.00    0.00    0.00   45.18
+07:20:08  IST  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+07:20:08  IST  all   21.81    0.16    8.16    0.96    0.00    0.25    0.00    0.00    0.00   68.67

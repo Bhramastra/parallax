@@ -133,7 +133,7 @@ def master_listener(q):
                 print r.json()
                 k = r.json()
 
-                l_id = k['id']
+                l_id = str(k['id'])
                 os.system("python "+ f_name+"> result" + l_id + ".txt")
 
 
