@@ -119,7 +119,7 @@ def master_listener(q):
             if data=='3':
                 kill_all()
             if 'execute' in data:
-                data= data.split(":")[1]
+                _,l_id,data= data.split(":")
                 task = 1
                 f_name = "agent" + str(task) + ".py"
                 file = open(f_name,"w")
@@ -127,18 +127,13 @@ def master_listener(q):
                 file.write("\n")
                 file.write("cloudcode."+data)
                 file.close()
-
-                payload = {"id" : id}
-                r = requests.post("http://localhost:5000/taskreg",payload)
-                print r.json()
-                k = r.json()
-                l_id = str(k['id'])
+                print "task id"+str(l_id)
                 os.system("python "+ f_name+"> result" + l_id + ".txt")
-                file = open("result" + l_id + "txt","r")
+                file = open("result" + l_id + ".txt","r")
                 for line in file:
                         val=line
 
-                payload = {"id" : l_id,"result":val}
+                payload = {"task_id" : l_id,"node_id":id,"result":val}
                 r = requests.post("http://localhost:5000/postresult",payload)
                 print r.json()
                 k = r.json()

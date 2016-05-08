@@ -54,35 +54,42 @@ class Node(db.Model):
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    node = db.Column(db.Integer,db.ForeignKey(Node.id))
-    status = db.Column(db.String(20))
+    func = db.Column(db.String(20))
 
-    def __init__(self,node):
-        self.node = node
-        self.status= "running"
+    def __init__(self,function):
+        self.func=function
 
     def json(self):
         data={}
         data['id']=self.id
+        data['function']=self.func
         return data
 
+
+
 class Result(db.Model):
-    id = db.Column(db.Integer)
-    #node = db.Column(db.Integer,db.ForeignKey(Node.id))
+    id = db.Column(db.Integer,primary_key=True)
+    task_id = db.Column(db.Integer, db.ForeignKey(Task.id))
+    node_id = db.Column(db.Integer, db.ForeignKey(Node.id))
     result = db.Column(db.String(20))
 
-    def __init__(self,res):
-        self.id = id
-        self.result= result
+    def __init__(self,task_id,node_id,res):
+        self.task_id = task_id
+        self.node_id = node_id
+        self.result= res
 
     def json(self):
-        data={}
-        data['id']=self.id
+        data = {}
+        data['id'] = self.id
+        data['task_id'] = self.task_id
+        data['node_id'] = self.node_id
+        data['result'] = self.result
         return data
 
     
 admin.add_view(ModelView(Node, db.session))
 admin.add_view(ModelView(Task, db.session))
+admin.add_view(ModelView(Result, db.session))
 db.create_all()
 
 
@@ -162,18 +169,16 @@ def register():
 
 @app.route('/taskreg',methods=["POST"])
 def taskreg():
-    #data = request.get(force=True)
-    print request.form['id']
-    task=Task(request.form['id'])
+    task=Task(request.form['func'])
     db.session.add(task)
     db.session.commit()
     return jsonify(**(task.json())),201
 
+
 @app.route('/postresult',methods=["POST"])
 def postresult():
-    #data = request.get(force=True)
-    print request.form['id']
-    result=Result(request.form['id'],request.form['result'])
+    print request.form['task_id']
+    result=Result(request.form['task_id'],request.form['node_id'],request.form['result'])
     db.session.add(result)
     db.session.commit()
     return jsonify(**(result.json())),201

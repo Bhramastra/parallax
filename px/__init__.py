@@ -11,21 +11,41 @@ def get_nodes():
     nodes=r.json()
     return nodes['nodes']
 
+def partial(task_id):
+    r = requests.get("http://"+config['MANAGEMENT_HOST']+":"+str(config['MANAGEMENT_PORT'])+'/partial/'+str(task_id))
+    r = r.json()
+    return r['res']
+
+def fetch(task_id):
+    r=requests.get("http://"+config['MANAGEMENT_HOST']+":"+str(config['MANAGEMENT_PORT'])+'/fetch/'+str(task_id))
+    r=r.json()
+    return r['stat']
+
+def register_task(func):
+    payload={"func": func}
+    print "http://" + config['MANAGEMENT_HOST'] + ":" + str(config['MANAGEMENT_PORT']) + '/taskreg'
+    r = requests.post(
+        "http://" + config['MANAGEMENT_HOST'] + ":" + str(config['MANAGEMENT_PORT']) + '/taskreg',payload)
+    r = r.json()
+    return r['id']
+
 def execute(function,args,max_nodes=10):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(10)
     try:
         s.connect(("0.0.0.0",1200))
         try:
-           # import pdb
-           # pdb.set_trace()
+            import pdb
+            pdb.set_trace()
+            task_id=register_task("execute:" + function+'('+'"'+args+'"'+")")
             s.send("user")
-            s.send("execute:" + function+'('+'"'+args+'"'+")")
+            s.send("execute:" +str(task_id)+":"+function+'('+'"'+args+'"'+")")
         except Exception as e:
             print str(e)
             return -1
         finally:
             s.close()
+        return task_id
     except Exception as e:
         print traceback.format_exc()
         print str(e)
