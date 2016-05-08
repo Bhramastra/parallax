@@ -1,2 +1,2 @@
 import cloudcode
-cloudcode.ga('dsd')
+cloudcode.ga("dsd")

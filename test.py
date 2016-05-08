@@ -1,4 +1,4 @@
 import px
 
 px.deploy("test.txt")
-# px.execute("ga","dsd")
+px.execute("ga","dsd")

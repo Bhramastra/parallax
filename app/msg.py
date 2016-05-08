@@ -53,37 +53,22 @@ class Server:
                         print self.NODE_LIST
                     self.SOCKET_LIST.append(sockfd)
                     print "Client "+ type+ str(addr)+" connected to " +self.type
-
-                   # broadcast(server_socket, sockfd, "[%s:%s] entered our chatting room\n" % addr)
-
-                # a message from a client, not a new connection
                 else:
-                    # process data recieved from client,
                     try:
-                        # receiving data from the socket.
                         data = sock.recv(self.RECV_BUFFER)
                         if data:
-                            # there is something in the socket
-                            print sock.gethostname() + "got data" +data
+                            print "got data" +data
                             self.broadcast(server_socket,sock,data)
                         else:
-                            # remove the socket that's broken
                             if sock in self.SOCKET_LIST:
                                 self.SOCKET_LIST.remove(sock)
-
-                            # at this stage, no data means probably the connection has been broken
-                           # broadcast(server_socket, sock, "Client (%s, %s) is offline\n" % addr)
-
-                    # exception
-                    except:
-                       # broadcast(server_socket, sock, "Client (%s, %s) is offline\n" % addr)
+                    except Exception as e:
+                        print str(e)
                         continue
-
         server_socket.close()
 
-    # broadcast chat messages to all connected clients
     def broadcast(self, server_socket, sock, message):
-        print "brodacast called"
+        print "brodcast called"
         print self.NODE_LIST
         for socket in self.NODE_LIST:
             # send the message only to peer

@@ -119,18 +119,16 @@ def master_listener(q):
             if data=='3':
                 kill_all()
             if 'execute' in data:
-                print "here"
-                data= data.split(":")
+                data= data.split(":")[1]
                 task = 1
                 f_name = "agent" + str(task) + ".py"
                 file = open(f_name,"w")
                 file.write("import cloudcode")
                 file.write("\n")
-                file.write("cloudcode.ga('dsd')")
+                file.write("cloudcode."+data)
                 file.close()
-                print "here"
                 os.system("python "+ f_name+"> xuz.txt")
-                fprocess = soldier.run('python ' + f_name + ' > result.txt', background=True)
+
 
     except Exception as e:
         q.put((repr(e), threading.current_thread().getName()))

@@ -1,4 +1,4 @@
 Linux 4.2.0-16-generic (gaurav-laptop) 	Sunday 08 May 2016 	_x86_64_	(4 CPU)
 
-01:45:12  IST  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
-01:45:12  IST  all   19.00    0.13    7.40    0.75    0.00    0.23    0.00    0.00    0.00   72.49
+05:17:47  IST  CPU    %usr   %nice    %sys %iowait    %irq   %soft  %steal  %guest  %gnice   %idle
+05:17:47  IST  all   23.94    0.16    9.09    0.96    0.00    0.27    0.00    0.00    0.00   65.58
