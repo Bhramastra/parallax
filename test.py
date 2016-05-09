@@ -1,6 +1,7 @@
 import px
 
+px.init()
 px.deploy("test.txt")
 task_id=px.execute("ga","dsd")
-# while px.fetch(task_id):
-#     print px.partial(task_id)
+while 1:
+    print px.fetch(task_id)

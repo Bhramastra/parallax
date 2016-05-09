@@ -1,10 +1,21 @@
 import socket
 import requests
 import traceback
+# from . import result_fetch
+import threading
 import pdb
 config={}
 config['MANAGEMENT_HOST']="0.0.0.0"
 config['MANAGEMENT_PORT']=5000
+client_id=0
+
+
+def init():
+    r = requests.post("http://"+config['MANAGEMENT_HOST']+":"+str(config['MANAGEMENT_PORT'])+"/clientreg")
+    r = r.json()
+    if 'success' in r['msg']:
+        global client_id
+        client_id = r['id']
 
 def get_nodes():
     r=requests.get("http://"+config['MANAGEMENT_HOST']+":"+str(config['MANAGEMENT_PORT'])+"/nodes/online")
@@ -17,12 +28,12 @@ def partial(task_id):
     return r['res']
 
 def fetch(task_id):
-    r=requests.get("http://"+config['MANAGEMENT_HOST']+":"+str(config['MANAGEMENT_PORT'])+'/fetch/'+str(task_id))
+    r=requests.get("http://"+config['MANAGEMENT_HOST']+":"+str(config['MANAGEMENT_PORT'])+'/fetch/'+str(client_id)+"/"+str(task_id))
     r=r.json()
-    return r['stat']
+    return r
 
 def register_task(func):
-    payload={"func": func}
+    payload={"func": func,"client_id": client_id}
     print "http://" + config['MANAGEMENT_HOST'] + ":" + str(config['MANAGEMENT_PORT']) + '/taskreg'
     r = requests.post(
         "http://" + config['MANAGEMENT_HOST'] + ":" + str(config['MANAGEMENT_PORT']) + '/taskreg',payload)
@@ -35,8 +46,6 @@ def execute(function,args,max_nodes=10):
     try:
         s.connect(("0.0.0.0",1200))
         try:
-            import pdb
-            pdb.set_trace()
             task_id=register_task("execute:" + function+'('+'"'+args+'"'+")")
             s.send("user")
             s.send("execute:" +str(task_id)+":"+function+'('+'"'+args+'"'+")")
